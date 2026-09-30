@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>VideoBook｜项目背景、技术方案与使用说明</title>
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #18303b; background: #e8eef0; font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+.page { width: 210mm; height: 297mm; padding: 20mm 19mm 17mm; margin: 0 auto 8mm; background: #fff; position: relative; break-after: page; overflow: hidden; }
+.page:last-child { break-after: auto; }
+.top { color: #16827d; font-size: 9pt; letter-spacing: .16em; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #c8d9d9; padding-bottom: 4mm; }
+.folio { position: absolute; bottom: 9mm; left: 19mm; right: 19mm; border-top: 1px solid #dce6e7; padding-top: 3mm; display: flex; justify-content: space-between; color: #6a8088; font-size: 8pt; }
+h1 { font-size: 29pt; line-height: 1.3; margin: 18mm 0 4mm; color: #102b37; }
+h2 { font-size: 19pt; margin: 10mm 0 5mm; color: #102b37; line-height: 1.35; }
+h3 { font-size: 11.5pt; margin: 6mm 0 2mm; color: #126c69; }
+p { font-size: 10pt; line-height: 1.75; margin: 0 0 3mm; }
+li { font-size: 9.6pt; line-height: 1.65; margin-bottom: 1.6mm; }
+ul, ol { margin: 2mm 0 4mm; padding-left: 5mm; }
+.lead { font-size: 13.2pt; line-height: 1.7; color: #46616a; }
+.tag { display: inline-block; padding: 1.3mm 3mm; color: #096e69; background: #e2f3f0; border-radius: 8mm; font-size: 8.5pt; margin: 0 2mm 2mm 0; }
+.eyebrow { color: #13867d; font-size: 10pt; letter-spacing: .15em; font-weight: 700; }
+.box { border-left: 3px solid #22aaa0; background: #f1f8f7; padding: 4mm 5mm; margin: 4mm 0; }
+.muted { color: #627780; }
+.small { font-size: 8.8pt; line-height: 1.65; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin: 4mm 0; }
+.card { background: #f4f8f9; border: 1px solid #dce8e9; padding: 4mm; border-radius: 2mm; }
+.card h3 { margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; table-layout: fixed; }
+th { text-align: left; background: #e7f2f1; color: #125b5a; font-size: 9pt; }
+td, th { border-bottom: 1px solid #dbe7e8; padding: 2.5mm; vertical-align: top; line-height: 1.55; }
+td { font-size: 8.8pt; }
+code { font-family: Consolas, monospace; background: #edf3f3; padding: 0 .8mm; font-size: 8.7pt; overflow-wrap: anywhere; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #102c38; color: #eef9f8; padding: 4mm; border-radius: 2mm; font: 8.5pt/1.55 Consolas, monospace; margin: 2mm 0 4mm; }
+.flow { display: flex; gap: 2mm; align-items: stretch; margin: 6mm 0; }
+.flow div { flex: 1; border-radius: 2mm; background: #e9f4f3; color: #116965; text-align: center; padding: 4mm 1mm; font-size: 9pt; font-weight: 700; }
+.flow b { align-self: center; color: #89aaa8; }
+.rule { height: 1px; background: #dce8e9; margin: 5mm 0; }
+.cover { background: linear-gradient(145deg, #102e3c 0%, #164f55 64%, #1b8b81 100%); color: white; }
+.cover h1 { color: white; margin-top: 35mm; font-size: 34pt; }
+.cover .lead, .cover .top { color: #d2ece9; }
+.cover .top { border-color: #6aa8a5; }
+.cover .folio { color: #d2ece9; border-color: #6aa8a5; }
+.cover .bar { width: 25mm; height: 2mm; background: #69d5c6; margin: 16mm 0; }
+.cover .hero { margin-top: 26mm; padding: 7mm; border: 1px solid #75b4b0; border-radius: 3mm; font-size: 13pt; line-height: 1.75; }
+.num { color: #18a098; font-weight: 700; font-size: 10pt; }
+a { color: #126d76; text-decoration: none; }
+@media screen { .page { box-shadow: 0 3mm 12mm #bdc9cc; } }
+@media print { body { background: white; } .page { margin: 0; box-shadow: none; } }
+</style>
+</head>
+<body>
+
+<section class="page cover">
+  <div class="top">PROJECT REPORT · 2026.09.29</div>
+  <h1>VideoBook</h1>
+  <p class="lead">从视频到可追溯的图文技术电子书</p>
+  <div class="bar"></div>
+  <p class="lead">项目背景 · 痛点与需求 · 技术方案 · AI 核心能力<br>功能说明 · 使用指南 · 应用前景与商业模式</p>
+  <div class="hero">把一条课程或技术视频链接，转化为有章节、有关键画面、有原视频时间锚点的 Markdown 与 HTML 电子书，让学习者能阅读、检索、核对和分享。</div>
+  <div class="folio"><span>VideoBook Agent</span><span>01 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">01 · 项目定位</div>
+  <h2>项目背景与作品概述</h2>
+  <p>视频已成为技术学习、软件演示和课程传播的重要载体，但其内容天然沿时间轴排布。读者查找一个结论、复现一个操作或回看一张板书，往往必须反复拖动进度条。平台字幕能提供文字，却通常保留口语、错词和碎片化顺序；直接导出字幕并不能形成可用的教材。</p>
+  <p>VideoBook 是一个面向 YouTube 与 Bilibili 的本地工具箱与 AI 助手工作流。用户提交视频链接后，系统取得平台字幕；无字幕时可用本地语音识别生成带时间戳的文本。AI 助手依据字幕、视频章节及可选的课程官方资料重构知识结构，写出 Markdown；随后脚本把关键时间点的画面、官方幻灯片和视频回链嵌入书稿，并生成可在浏览器阅读的 HTML。</p>
+  <p>相关课堂研究发现，在其受试条件下，为课程视频附上自动摘要有助于学习者完成材料测验[1]；这为“视频加可读文本”的形态提供参考，但不直接证明本项目的学习效果。</p>
+  <div class="box"><p><strong>交付对象：</strong><code>book.md</code> 适合编辑、版本管理与二次加工；<code>book.html</code> 适合阅读和演示。二者与图片放在 <code>output/&lt;视频ID&gt;/</code> 下。</p></div>
+  <h3>作品边界</h3>
+  <ul>
+    <li>现有稳定流程由多个脚本和 AI 助手协同完成；<code>src/agent.py</code> 目前只是字幕阶段向导，不能把它表述成独立的一键全自动产品。</li>
+    <li>电子书是对原视频的学习辅助。截图、字幕和课件仍受原作者及平台权利约束，项目代码的开源许可不能替代内容授权。</li>
+    <li>公式视觉识别正在样例片段中验证，独立实验不能代表全视频、全学科的自动准确率。</li>
+  </ul>
+  <h3>本报告阅读路径</h3>
+  <p class="small">第 3–4 页解释为什么做、为谁做；第 5–9 页说明功能和技术；第 10–11 页给出操作流程；第 12–13 页给出质量边界与商业分析；第 14 页列出证据和结论。</p>
+  <div class="folio"><span>背景 / 定位</span><span>02 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">02 · 问题分析</div>
+  <h2>当前痛点：视频内容难以沉淀</h2>
+  <div class="grid">
+    <div class="card"><h3>定位慢</h3><p>长视频按时长组织，概念、示例和操作步骤分散。读者知道“讲过”，却难以迅速找到所在位置。</p></div>
+    <div class="card"><h3>字幕不等于教材</h3><p>自动字幕常有同音词、英文术语和断句错误；逐字稿缺乏层级、前后依赖、图示和可执行步骤。</p></div>
+    <div class="card"><h3>画面信息会丢失</h3><p>代码、界面、板书、公式端点与幻灯片布局无法只靠口述恢复。纯文字总结容易省略关键证据。</p></div>
+    <div class="card"><h3>复核成本高</h3><p>读者需要在总结与原视频之间反复切换。没有时间锚点，错误难以发现，也不便于向他人解释出处。</p></div>
+  </div>
+  <h3>根因链条</h3>
+  <div class="flow"><div>视频与音轨</div><b>›</b><div>字幕碎片</div><b>›</b><div>人工整理</div><b>›</b><div>难以复核</div></div>
+  <p>传统做法把“转写”当成终点；VideoBook 需要解决的是从时间序列到知识结构的转换，并把关键视觉证据和原视频位置保留下来。AI 擅长语言重组，但必须受来源约束；否则流畅文本会掩盖漏写和误读。</p>
+  <h3>高数样例暴露的具体问题</h3>
+  <p>在本地一段 20:00–35:00 的高数视频试验中，人工核对出 9 组公式或关键例子，其中 6 组的具体内容未进入原书。区间端点、定义域括号等信息在 ASR 中不完整，须回看画面和附近口述。这说明“只按现成书稿选图”会漏掉未被书稿提及的关键视觉知识。</p>
+  <p class="small muted">以上 9 组是样例检查中发现的候选，不代表该片段公式总数，也不能据此推导全片召回率。</p>
+  <div class="folio"><span>痛点 / 根因</span><span>03 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">03 · 需求分析</div>
+  <h2>目标用户、目标与需求优先级</h2>
+  <table><tr><th style="width:22%">用户</th><th style="width:42%">典型任务</th><th>最关键的价值</th></tr>
+    <tr><td>技术学习者</td><td>回看一段课程中的命令、算法、公式或界面操作</td><td>按章节快速定位，点击时间锚点核对原视频</td></tr>
+    <tr><td>课程创作者 / 助教</td><td>把公开视频整理成讲义、复习资料或课后阅读</td><td>减少初稿编排和配图工作，保留来源说明</td></tr>
+    <tr><td>开发团队 / 培训人员</td><td>沉淀录屏教程与软件演示</td><td>把线性录屏变成可检索的操作文档</td></tr>
+    <tr><td>研究与知识管理用户</td><td>从讲座中提炼观点、保留出处与画面</td><td>可编辑的 Markdown 与可追溯证据</td></tr>
+  </table>
+  <h3>产品目标</h3>
+  <ol>
+    <li>把视频内容转成能独立阅读的结构化书稿，而非逐字稿的简单排版。</li>
+    <li>在重要解释、操作和图示处保留图片或幻灯片，并能回到准确的视频时间。</li>
+    <li>对字幕错误、视觉细节和可疑结论留出核对入口，避免把模型推断写成原视频事实。</li>
+    <li>让本地成果可继续编辑、审阅、发布和分享。</li>
+  </ol>
+  <h3>需求分级</h3>
+  <p><span class="tag">核心</span> 链接输入、字幕/ASR、AI 结构化改写、截图与时间锚点、Markdown/HTML 输出。</p>
+  <p><span class="tag">增强</span> 官方讲义与课件校准、字幕对照稿、幻灯片覆盖检查、GitHub Pages 发布。</p>
+  <p><span class="tag">验证中</span> 数学视频的全片候选发现、视觉模型转写、公式审核与 LaTeX 导出。该路径需要更多视频和人工标注验收。</p>
+  <div class="folio"><span>用户 / 需求</span><span>04 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">04 · 技术方案</div>
+  <h2>总体架构：AI 编排 + 可重跑流水线</h2>
+  <div class="flow"><div>视频链接</div><b>›</b><div>字幕 / ASR</div><b>›</b><div>AI 写书</div><b>›</b><div>画面 / 课件</div><b>›</b><div>HTML / 发布</div></div>
+  <table><tr><th style="width:21%">阶段</th><th style="width:42%">主要实现</th><th>输出与核对点</th></tr>
+    <tr><td>内容取得</td><td><code>dump_transcript.py</code> 获取平台字幕；无字幕时 <code>asr_transcript.py</code> 下载音轨并用 faster-whisper 转写</td><td><code>transcript.json</code>，含时间段、视频时长和可能的章节；检查覆盖率</td></tr>
+    <tr><td>知识重构</td><td>AI 助手按 <code>prompts/stitcher_system.md</code> 阅读字幕、章节、可选讲义并撰写书稿</td><td><code>book.md</code>；检查术语、逻辑、事实与 <code>SCREENSHOT:</code> 时间戳</td></tr>
+    <tr><td>视觉增强</td><td><code>capture_frames.py</code> 用已登录浏览器截取播放器帧；<code>course_assets.py</code> 处理官方讲义/幻灯片</td><td><code>images/</code> 和已物化的图片链接；抽查画质、时间与授权说明</td></tr>
+    <tr><td>阅读交付</td><td><code>post_process.py</code> 把 Markdown、图片和视频卡片渲染成 HTML；<code>publish.py</code> 可选发布</td><td><code>book.html</code>；检查图片、回链、公式与页面布局</td></tr>
+  </table>
+  <p>流水线把语义判断交给 AI，把可重复的抓取、抽帧、替换、渲染和发布交给脚本。输出落在本地目录，便于逐步检查和修订。视频播放器采用原平台嵌入或原视频回链，图文内容不要求用户在整个视频时间线上逐秒浏览。</p>
+  <p>长视频章节生成研究也采用带时间戳的语音转写与画面描述来确定主题边界[3]；VideoBook 借鉴这种多源信息思路，但仍由 AI 助手和人工审校形成最终章节。</p>
+  <div class="box"><p><strong>关键数据原则：</strong>时间戳贯穿字幕、截图、视频卡片和人工核对；保留原始字幕与独立书稿，便于在发现错词或漏图后追溯。</p></div>
+  <div class="folio"><span>架构 / 数据流</span><span>05 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">05 · AI 核心作用</div>
+  <h2>AI 决定“读得懂”，证据决定“信得过”</h2>
+  <h3>1. 语音转文字：为无字幕视频建立时间轴</h3>
+  <p>当平台没有可用字幕时，本地 faster-whisper 对音轨执行 ASR，并输出与平台字幕同构的 <code>transcript.json</code>。这一步让原本不可搜索的讲解进入后续书籍化流程。其基础 Whisper 模型见相关研究[2]；领域术语提示可缓解专有名词错听，但转写仍需校订。</p>
+  <h3>2. 语义重构：把口语过程写成知识结构</h3>
+  <p>大语言模型读取转写文本、视频章节和可用的官方讲义，归纳主题、理顺前后依赖、统一术语，将冗长口语重写为章节、步骤、表格、代码块和要点。对于非中文原视频，工作流要求翻译为中文。它还要为需要视觉证据的位置标注时间戳，使后续脚本能准确配图。</p>
+  <h3>3. 跨模态校准：文字与画面相互制约</h3>
+  <p>截图、幻灯片、板书和附近字幕共同帮助核对模型文本。官方讲义可校准术语与章节，幻灯片可补足视频帧的清晰度；画面可发现字幕未记录的界面与数学符号。带时间边界的视频描述[4]和“关键帧—说明文字”配对摘要[5]是相关研究方向；本项目采用原始画面、官方资料和视频回链约束 AI 概括。</p>
+  <h3>4. 视觉公式识别：验证中的扩展</h3>
+  <p>当前工作区有独立实验：对 15 分钟视频片段取时间序列画面，视觉模型提出候选，再看高清单帧与邻近字幕，生成可核对的公式书稿。首读曾将 <code>[-1,2)</code> 误写成 <code>[-1,2]</code>，审校后才纠正。它显示 AI 可以帮助发现遗漏，也说明端点等细节必须经过画面复核；该功能尚不能被表述为通用的一键准确识别。</p>
+  <div class="box"><p><strong>核心原则：</strong>模型负责提取、组织和提出候选；事实性公式、步骤和结论以画面、字幕、官方资料及人工复核为准。</p></div>
+  <div class="folio"><span>AI 价值 / 边界</span><span>06 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">06 · 功能清单 A</div>
+  <h2>作品功能：从视频到初稿</h2>
+  <h3>视频识别与字幕提取</h3>
+  <p>支持 YouTube、Bilibili 视频链接；解析视频 ID、标题、时长与可用章节。平台字幕被整理为带开始/结束时间的分段 JSON。脚本提供字幕覆盖率提示，低覆盖率意味着不应直接进入书稿改写。</p>
+  <h3>本地 ASR 兜底</h3>
+  <p>平台确无字幕时，只获取音轨，由 faster-whisper 转写。支持抽样试跑、领域术语提示、GPU/CPU 配置和进度续跑。样例中 ASR 为数学视频生成了全段转写，但错词仍需人工或 AI 对照校正。</p>
+  <h3>AI 书稿编排</h3>
+  <p>助手按主题而非机械按原视频章节组织内容：给概念取标题，提炼解释顺序，把操作写成步骤，并为关键画面插入 <code>SCREENSHOT:HH:MM:SS</code> 标记。书稿要求保留原视频真实主张，不能凭常识补出讲者没有展示的论据。</p>
+  <h3>字幕对照与校订</h3>
+  <p><code>make_corrected.py</code> 可生成逐段字幕对照稿，保留时间与原话顺序，修明显错词和口癖；重跑默认保护既有人工修订。此稿便于核对 AI 书稿和原讲解，发布时可作为可选附件。</p>
+  <div class="box"><p><strong>典型结果：</strong>一个样例技术视频生成了 10 个主题章节、17 张播放器截图和可阅读 HTML；数字仅代表该次本地样例，不是产品对任意视频的固定产量。</p></div>
+  <div class="folio"><span>功能 / 内容生成</span><span>07 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">07 · 功能清单 B</div>
+  <h2>作品功能：配图、阅读与发布</h2>
+  <h3>播放器截帧</h3>
+  <p><code>capture_frames.py</code> 读取书稿中的时间标记，通过专用 Chrome 配置访问已登录播放器，截取清晰的视频帧并替换图片占位。首次需在专用浏览器窗口登录；之后可复用登录态。脚本优先补拍缺失帧，失败时可用视频源与 ffmpeg 抽帧兜底。</p>
+  <h3>官方资料增强</h3>
+  <p>有课程主页时，<code>course_assets.py</code> 抓取讲义、提取幻灯片文字，并可把课件渲染为高清图片。感知哈希提供视频帧与官方幻灯片的匹配候选；确认后可用更清楚的官方图替换糊帧。审计命令检查每页幻灯片是否在书中恰好出现一次。</p>
+  <h3>HTML 阅读体验</h3>
+  <p><code>post_process.py</code> 将 Markdown 转为暗色主题 HTML，支持图片点击放大、表格、代码块、目录和视频卡片。静态图卡提供时间回链；缺少本地图时可显示平台嵌入播放器。B 站分 P 参数会保留在回链中，避免跳错集数。</p>
+  <h3>本地预览与可选公开发布</h3>
+  <p>本地 HTTP 服务用于浏览书稿并确保视频嵌入正常。<code>publish.py</code> 可将成品文件整理到独立 <code>pages</code> 分支；完成 GitHub Pages 设置和推送后，读者可通过网页访问。公开发布前要确认视频画面、字幕、课件的授权与署名。</p>
+  <div class="folio"><span>功能 / 阅读发布</span><span>08 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">08 · 开发工具</div>
+  <h2>开发工具与关键技术选型</h2>
+  <table><tr><th style="width:29%">工具 / 技术</th><th style="width:38%">作用</th><th>采用原因</th></tr>
+    <tr><td>Python 3、pytest</td><td>各阶段命令行脚本、自动检查</td><td>适合本地批处理，便于重跑和检查中间产物</td></tr>
+    <tr><td>yt-dlp、youtube-transcript-api、webvtt-py</td><td>视频元数据、平台字幕、WebVTT 解析</td><td>覆盖 YouTube / Bilibili 常见输入格式</td></tr>
+    <tr><td>faster-whisper</td><td>无字幕时的本地语音识别</td><td>输出时间段文本，减少对远端转写服务的依赖</td></tr>
+    <tr><td>Playwright + Chrome</td><td>登录态播放器截帧、课件渲染</td><td>保留浏览器访问权限与真实视频画面</td></tr>
+    <tr><td>Pillow、imageio-ffmpeg</td><td>图像处理、幻灯片候选匹配与抽帧兜底</td><td>支撑视觉资源生产和质量检查</td></tr>
+    <tr><td>Markdown、HTML/CSS、浏览器</td><td>可编辑源文件和最终阅读界面</td><td>格式开放、便于本地阅读与静态发布</td></tr>
+    <tr><td>AI 编程助手 / 大模型</td><td>阅读转写、组织章节、术语校准、图像候选审校</td><td>处理高度语义化、难以由固定规则完成的编排任务</td></tr>
+  </table>
+  <p><strong>环境口径：</strong>README 写明 Python ≥3.10，<code>pyproject.toml</code> 标注 ≥3.12；本地安装记录使用 Python 3.13。实际部署应以选定依赖版本和完整测试为准。项目以本地脚本为主，没有独立后台服务或账户系统。</p>
+  <p><strong>安全与版权：</strong>登录态保存在专用浏览器配置中；脚本会临时使用 cookie 以访问需要登录的字幕，不应在交付物中暴露 cookie。课程官方资料和视频画面应保留来源及许可信息。</p>
+  <div class="folio"><span>开发栈 / 约束</span><span>09 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">09 · 使用说明</div>
+  <h2>普通用户：从链接到电子书</h2>
+  <ol>
+    <li><strong>准备环境。</strong>克隆仓库，安装 <code>requirements.txt</code>；在工作目录中启动能读取本项目文件的 AI 助手。浏览器截帧需要 Chrome，首次使用 B 站登录内容时在专用配置中登录一次。</li>
+    <li><strong>给出链接和期望。</strong>例如：“请把这条 B 站课程做成 VideoBook，保留重要演示画面和原视频时间，先核对字幕错词，再输出 Markdown 与 HTML。”如有官方课程主页，一并提供。</li>
+    <li><strong>检查助手的阶段结果。</strong>确认字幕是否覆盖主要内容；无字幕时确认 ASR 抽样质量。查看书稿目录是否符合讲解逻辑，检查关键操作、板书和演示是否有时间标记。</li>
+    <li><strong>审阅视觉证据。</strong>抽查有代表性的图片、关键术语、时间回链和可能的公式。画面不清晰时补拍；字幕和画面冲突时返回原视频核对。</li>
+    <li><strong>阅读与分享。</strong>打开本地预览地址阅读 HTML；需要继续改写时编辑 <code>book.md</code> 并重跑渲染。公开发布需先确认内容使用权。</li>
+  </ol>
+  <div class="box"><p><strong>交互指南：</strong>把反馈说成可定位的修改，如“第 3 章 12:34 的界面图太糊，重截这一帧”“32:30 的定义域端点请按画面复核”。这比笼统要求“再完善一下”更容易准确修正。</p></div>
+  <h3>阅读界面怎么用</h3>
+  <ul>
+    <li>先看章节标题快速定位主题；代码块和表格用于复现与比较。</li>
+    <li>点击图片放大查看界面或板书；点击卡片中的原视频链接核对上下文。</li>
+    <li>如果嵌入播放器无法载入，优先使用“回到原视频”链接；本地预览应通过 <code>http://localhost</code> 打开，而不是直接双击 <code>file://</code> 页面。</li>
+  </ul>
+  <div class="folio"><span>用户流程 / 交互</span><span>10 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">10 · 操作指南</div>
+  <h2>操作者：命令流程与验收要点</h2>
+  <p>以下命令需在仓库根目录执行。Windows 可将 <code>python</code> 替换为本机可用的 Python 3.12+ 解释器。AI 写书步骤由助手执行，脚本本身不会自动完成语义编排。</p>
+  <pre>python -m pip install -r requirements.txt
+python src/dump_transcript.py "&lt;VIDEO_URL&gt;"
+# 平台确无字幕时：
+python src/asr_transcript.py &lt;VIDEO_ID&gt; --sample-start 0 --sample-dur 180
+python src/asr_transcript.py &lt;VIDEO_ID&gt; --restart
+# 抽样合格后用 --restart 全量转写，再由 AI 助手生成 book.md
+python src/capture_frames.py --setup-profile   # 首次登录时
+python src/capture_frames.py &lt;VIDEO_ID&gt; "&lt;VIDEO_URL&gt;"
+python src/post_process.py "&lt;VIDEO_URL&gt;" output/&lt;VIDEO_ID&gt;/book.md
+python -m http.server 8080 --directory output/&lt;VIDEO_ID&gt;</pre>
+  <p>浏览器访问 <code>http://localhost:8080/book.html</code>。若课程有官方主页，可先运行 <code>course_assets.py &lt;VIDEO_ID&gt; --course-url &lt;URL&gt;</code>，书稿完成后用 <code>--audit</code> 检查课件覆盖，再渲染 HTML。</p>
+  <h3>交付前 5 项核对</h3>
+  <ol>
+    <li>字幕覆盖率与书稿的章节范围一致；ASR 专有名词已抽查。</li>
+    <li><code>book.md</code> 没有遗留的 <code>SCREENSHOT:</code> 占位；所有图片路径存在。</li>
+    <li>章节、表格、代码块和原视频回链能正常阅读；B 站分 P 跳转正确。</li>
+    <li>关键事实，尤其公式、端点、数字和软件界面名称，已对照画面或官方资料。</li>
+    <li>公开版本保留原作者署名、课程资料许可与必要的内容使用权说明。</li>
+  </ol>
+  <div class="folio"><span>命令 / 验收</span><span>11 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">11 · 质量边界</div>
+  <h2>现阶段验证与主要限制</h2>
+  <table><tr><th style="width:32%">已观察到的结果</th><th>能够说明什么 / 不能说明什么</th></tr>
+    <tr><td>技术视频样例</td><td>曾产出 10 个章节、17 张图，图片引用和网页渲染经本地检查；说明完整流程可执行，不等于所有视频都能无人审校交付。</td></tr>
+    <tr><td>高数 15 分钟人工试验</td><td>人工核对 9 组候选，其中 6 组具体内容未进入原书；证明仅靠现有书稿选帧有遗漏风险，不代表全片公式总数。</td></tr>
+    <tr><td>独立视觉模型实验</td><td>已知 9 组在候选中找到对应画面，审校版含 10 张图和 39 处公式节点；单个片段的已知组命中不能计算通用召回率。</td></tr>
+  </table>
+  <h3>需要持续控制的风险</h3>
+  <ul>
+    <li><strong>来源质量：</strong>平台无字幕、覆盖不足、ASR 错词或英文术语误识会影响后续重构。</li>
+    <li><strong>视觉遗漏：</strong>固定时间间隔抽帧可能错过短暂出现的公式；只从已写好的书稿选图也可能遗漏内容。</li>
+    <li><strong>模型误读：</strong>细小符号、区间端点、板书残留和未完成推导需要独立核对，不能用流畅文本掩盖疑点。</li>
+    <li><strong>运行环境：</strong>登录态、平台限制、代理、浏览器版本和视频可用性会影响字幕抓取及截帧。</li>
+    <li><strong>内容权利：</strong>开源代码不意味着自动取得视频、字幕和课件的再发布权。</li>
+  </ul>
+  <div class="box"><p><strong>改进方向：</strong>公式功能若要产品化，应补全可解码视频获取、时间覆盖报告、候选与待核对清单，再以跨视频人工标注集衡量漏检与误写。</p></div>
+  <div class="folio"><span>验证 / 风险</span><span>12 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">12 · 前景与商业</div>
+  <h2>应用前景与商业模式分析</h2>
+  <p>以下为基于产品能力与用户任务的商业推演，非已上线业务或经市场验证的收入预测。</p>
+  <h3>可落地的应用场景</h3>
+  <div class="grid">
+    <div class="card"><h3>课程复习资料</h3><p>将长课程变成可跳转原视频的章节笔记，适合考前定位定义、例题和演示。</p></div>
+    <div class="card"><h3>软件培训手册</h3><p>把录屏中的界面状态、操作步骤、代码和注意事项沉淀为可更新文档。</p></div>
+    <div class="card"><h3>创作者内容复用</h3><p>经授权后把公开视频整理成配套讲义、专题文章或会员阅读材料。</p></div>
+    <div class="card"><h3>机构知识库</h3><p>整理培训、技术分享与讲座，形成可查阅的内部资料；需额外建设权限和管理能力。</p></div>
+  </div>
+  <h3>可能的商业路径</h3>
+  <table><tr><th style="width:28%">模式</th><th>收费对象与价值</th></tr>
+    <tr><td>托管生成服务</td><td>面向个人与团队按视频时长、任务量或订阅收费；提供字幕处理、AI 改写、配图与人工审核选项。</td></tr>
+    <tr><td>创作者 / 机构方案</td><td>面向课程方提供批量转换、品牌样式、权限控制、协作审校和内容发布；按席位或项目收费。</td></tr>
+    <tr><td>内容制作服务</td><td>对高价值课程按项目收费，包含人工核对、版权确认、公式与图表审校。</td></tr>
+  </table>
+  <p class="small">当前仓库是本地开源工具箱，尚无账户、支付、批量运营后台或商业客户验证。商业化前应优先验证用户是否愿意为“准确、可核对、节省整理时间”的成品付费，并明确内容授权、模型成本和人工复核成本。</p>
+  <div class="folio"><span>场景 / 商业推演</span><span>13 / 14</span></div>
+</section>
+
+<section class="page">
+  <div class="top">13 · 结论与依据</div>
+  <h2>总结、下一步与参考文献</h2>
+  <p>VideoBook 已形成“字幕或 ASR → AI 结构化书稿 → 截图/官方资料 → HTML 阅读与可选发布”的本地工作流。AI 的核心贡献是把线性、口语化视频转成可阅读的知识结构；时间锚点、图片和原始材料使成果能够被复核。高数片段试验进一步说明，视觉信息必须参与数学内容整理。</p>
+  <h3>建议的下一步</h3>
+  <ol>
+    <li>完成公式候选发现与视觉转写的跨视频验收，建立清晰的“已确认 / 待核对 / 未覆盖”状态。</li>
+    <li>统一 README 与实际 Python 版本要求，并把完整生成流程的人工审校点明确写入用户文档。</li>
+    <li>若面向外部用户，再验证部署、内容授权、批量处理成本与真实付费需求。</li>
+  </ol>
+  <div class="rule"></div>
+  <h3>参考文献</h3>
+  <p class="small">[1] Gonzalez H, Li J, Jin H, et al. Automatically Generated Summaries of Video Lectures May Enhance Students’ Learning Experience[C]. BEA, 2023: 382–393. <a href="https://doi.org/10.18653/v1/2023.bea-1.31">doi:10.18653/v1/2023.bea-1.31</a>.</p>
+  <p class="small">[2] Radford A, Kim J W, Xu T, et al. Robust Speech Recognition via Large-Scale Weak Supervision[C]. ICML, PMLR 202, 2023: 28492–28518. <a href="https://proceedings.mlr.press/v202/radford23a.html">论文链接</a>.</p>
+  <p class="small">[3] Ventura L, Yang A, Schmid C, Varol G. Chapter-Llama: Efficient Chaptering in Hour-Long Videos with LLMs[C]. CVPR, 2025: 18947–18958. <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Ventura_Chapter-Llama_Efficient_Chaptering_in_Hour-Long_Videos_with_LLMs_CVPR_2025_paper.html">论文链接</a>.</p>
+  <p class="small">[4] Yang A, Nagrani A, Seo P H, et al. Vid2Seq: Large-Scale Pretraining of a Visual Language Model for Dense Video Captioning[C]. CVPR, 2023: 10714–10726. <a href="https://openaccess.thecvf.com/content/CVPR2023/html/Yang_Vid2Seq_Large-Scale_Pretraining_of_a_Visual_Language_Model_for_Dense_CVPR_2023_paper.html">论文链接</a>.</p>
+  <p class="small">[5] Kudo K, Nagasawa H, Suzuki J, Shimizu N. A Challenging Multimodal Video Summary: Simultaneously Extracting and Generating Keyframe-Caption Pairs from Video[C]. EMNLP, 2023: 7380–7402. <a href="https://doi.org/10.18653/v1/2023.emnlp-main.457">doi:10.18653/v1/2023.emnlp-main.457</a>.</p>
+  <div class="folio"><span>总结 / 来源</span><span>14 / 14</span></div>
+</section>
+
+</body>
+</html>

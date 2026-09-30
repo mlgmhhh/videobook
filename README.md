@@ -48,6 +48,16 @@ python -m pytest tests -q
 
 覆盖视频卡片渲染（B 站分 P `page=`、回链 query 保留、截图/幻灯片卡片）与字幕校订校验层（源哈希锁定、原文逐字匹配、禁删段/多行/大幅修改等）。
 
+## 数学公式识别实验（本地视频片段）
+
+`src/formula_ebook.py` 扫描本地片段的时间序列画面，调用兼容 OpenAI Chat Completions 的视觉模型提出候选，再结合附近字幕生成带原视频回链的公式试读书。先设置 `VIDEOBOOK_VISION_API_KEY` 和 `VIDEOBOOK_VISION_BASE_URL`，再运行：
+
+```bash
+python src/formula_ebook.py --clip <clip.mp4> --clip-start <片段起点秒数> --transcript output/<视频ID>/transcript.json --output output/<视频ID>/formula_experiment --model <视觉模型名>
+```
+
+输出包含候选、覆盖记录、Markdown、HTML 和 LaTeX；人工复核可用 `--review-file <review.json>` 生成独立审校版。固定间隔抽帧可能漏掉短暂公式，模型对端点等符号也可能误读，因此此命令仍是片段实验，不能将自动原稿直接作为已核准内容。
+
 ## 成品在哪里看
 
 - 在线阅读：<https://linbol.top/videobook/>
